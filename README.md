@@ -92,20 +92,26 @@ Los domingos y las fechas pasadas ya se bloquean automáticamente.
 
 ### Subir fotos a la galería
 
-1. Guarda las imágenes en `public/galeria/` (vertical 4:5, JPG o WebP, &lt;500 KB).
-2. En `src/lib/gallery.ts`, agrega `src` y `alt` al trabajo:
+La galería es **solo de uñas**. Cada foto se abre en un visor a pantalla
+completa (flechas, teclado, deslizar en el celular, `Esc` para cerrar).
+
+1. Guarda la imagen en `public/galeria/` (WebP o JPG, idealmente &lt;200 KB).
+2. Agrega una entrada en `src/lib/gallery.ts`:
 
 ```ts
 {
-  id: "esculturales-nude",
-  titulo: "Esculturales nude",
-  src: "/galeria/esculturales-nude.jpg",
-  alt: "Uñas esculturales largas en tono nude con acabado brillante",
+  id: "almendra-nude",
+  titulo: "Almendra nude",
+  src: "/galeria/almendra-nude.webp",
+  alt: "Uñas almendra en tono nude con acabado brillante",
+  ancho: 900,   // dimensiones reales de la foto
+  alto: 1400,
 }
 ```
 
-El marcador «Próximamente» desaparece solo. El `alt` describe la foto para
-quien no puede verla — no lo dejes vacío.
+El orden de la lista es el orden en la galería. Las **dos primeras** salen en el
+collage de la portada y de la **3.ª a la 5.ª** en la franja de galería de la
+portada. El `alt` describe la foto para quien no puede verla — no lo dejes vacío.
 
 ---
 

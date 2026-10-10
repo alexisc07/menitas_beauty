@@ -34,7 +34,9 @@ const PASOS = [
 
 export default function HomePage() {
   const destacados = SERVICIOS.filter((s) => s.destacado);
-  const teaser = TRABAJOS.slice(0, 3);
+  // El collage del hero usa las dos primeras fotos; la franja, las siguientes tres.
+  const hero = TRABAJOS.slice(0, 2);
+  const teaser = TRABAJOS.slice(2, 5);
 
   return (
     <>
@@ -86,13 +88,13 @@ export default function HomePage() {
             <div className="lg:col-span-6">
               <div className="grid grid-cols-2 gap-4">
                 <PlaceholderTile
-                  trabajo={teaser[0]}
+                  trabajo={hero[0]}
                   indice={0}
                   priority
-                  className="translate-y-6"
+                  className="translate-y-6 self-start"
                 />
                 <div className="flex flex-col gap-4">
-                  <PlaceholderTile trabajo={teaser[1]} indice={1} priority />
+                  <PlaceholderTile trabajo={hero[1]} indice={1} priority />
                   <div className="rounded-xl bg-surface-dark p-6">
                     <Sparkle className="size-5 text-accent" />
                     <p className="mt-3 text-sm leading-relaxed text-on-dark-soft">
@@ -172,7 +174,7 @@ export default function HomePage() {
             <SectionHeading
               eyebrow="Galería"
               title="Un vistazo a mi trabajo."
-              description="Aqui irian tus fotitos"
+              description="Algunos sets recientes. En la galería hay más, y puedes verlos en grande."
             />
             <ButtonLink href="/galeria" variant="secondary">
               Ver galería

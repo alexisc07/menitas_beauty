@@ -12,6 +12,9 @@ export type Trabajo = {
   src?: string;
   /** Texto alternativo de la foto. Obligatorio cuando hay src. */
   alt?: string;
+  /** Dimensiones reales de la foto, para mostrarla completa sin saltos. */
+  ancho?: number;
+  alto?: number;
 };
 
 const TONOS = [
