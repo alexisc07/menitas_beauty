@@ -16,7 +16,7 @@ const GRUPOS: { titulo: string; preguntas: Pregunta[] }[] = [
     preguntas: [
       {
         p: "¿Cómo agendo una cita?",
-        r: "Desde la página de agendar: eliges el servicio, el día y uno de los dos bloques disponibles. Al final te llevamos a mi Instagram para que me mandes un mensaje directo. Si quieres, puedes copiar el resumen de tu cita con un botón y pegarlo en el chat: así no tengo que preguntarte los datos. Tu cita queda apartada cuando yo te confirmo.",
+        r: "Desde la página de agendar: eliges el servicio, el día y uno de los bloques disponibles. Al final copias los datos de tu cita con un botón y me los mandas por mensaje directo (DM) en Instagram. Sin ese mensaje la cita no queda registrada; queda confirmada cuando yo te respondo.",
       },
       {
         p: "¿Por qué solo hay dos horarios por día?",

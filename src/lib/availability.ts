@@ -17,6 +17,16 @@ export const BLOQUES = [
 
 export type BloqueId = (typeof BLOQUES)[number]["id"];
 
+/**
+ * Bloques que ya están apartados (citas confirmadas).
+ * Formato "AAAA-MM-DD HH:MM", con la hora de inicio del bloque.
+ *
+ *   export const BLOQUES_APARTADOS = ["2026-10-14 15:00", "2026-10-14 17:30"];
+ *
+ * Si los dos bloques de un día están apartados, el día aparece como lleno.
+ */
+export const BLOQUES_APARTADOS: string[] = [];
+
 /** Clave local "AAAA-MM-DD" sin pasar por UTC (evita corrimientos de día). */
 export function claveFecha(fecha: Date): string {
   const y = fecha.getFullYear();
@@ -29,26 +39,50 @@ function aMedianoche(fecha: Date): Date {
   return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
 }
 
-export type MotivoCierre = "pasado" | "domingo" | "bloqueada" | null;
+export type MotivoCierre = "pasado" | "domingo" | "bloqueada" | "lleno" | null;
+
+export const claveBloque = (fecha: Date, bloque: BloqueId) => `${claveFecha(fecha)} ${bloque}`;
+
+export function bloqueApartado(
+  fecha: Date,
+  bloque: BloqueId,
+  apartados: readonly string[] = BLOQUES_APARTADOS,
+): boolean {
+  return apartados.includes(claveBloque(fecha, bloque));
+}
 
 /**
  * Por qué una fecha no se puede agendar, o null si sí se puede.
  * `hoy` se recibe como parámetro para que la función sea pura y testeable.
  */
-export function motivoCierre(fecha: Date, hoy: Date): MotivoCierre {
+export function motivoCierre(
+  fecha: Date,
+  hoy: Date,
+  apartados: readonly string[] = BLOQUES_APARTADOS,
+): MotivoCierre {
   if (aMedianoche(fecha) < aMedianoche(hoy)) return "pasado";
   if (!HORARIO.diasAbiertos.includes(fecha.getDay())) return "domingo";
   if (FECHAS_BLOQUEADAS.includes(claveFecha(fecha))) return "bloqueada";
+  if (BLOQUES.every((b) => bloqueApartado(fecha, b.id, apartados))) return "lleno";
   return null;
 }
 
-export function estaDisponible(fecha: Date, hoy: Date): boolean {
-  return motivoCierre(fecha, hoy) === null;
+export function estaDisponible(
+  fecha: Date,
+  hoy: Date,
+  apartados: readonly string[] = BLOQUES_APARTADOS,
+): boolean {
+  return motivoCierre(fecha, hoy, apartados) === null;
 }
 
-/** Bloques ofrecidos para una fecha. Vacío si el día está cerrado. */
-export function getBloquesParaFecha(fecha: Date, hoy: Date) {
-  return estaDisponible(fecha, hoy) ? BLOQUES : [];
+/** Bloques de una fecha, cada uno indicando si ya está apartado. Vacío si el día está cerrado. */
+export function getBloquesParaFecha(
+  fecha: Date,
+  hoy: Date,
+  apartados: readonly string[] = BLOQUES_APARTADOS,
+) {
+  if (!estaDisponible(fecha, hoy, apartados)) return [];
+  return BLOQUES.map((b) => ({ ...b, apartado: bloqueApartado(fecha, b.id, apartados) }));
 }
 
 /* ---------------------------------- Fechas --------------------------------- */

@@ -28,7 +28,7 @@ const PASOS = [
   {
     numero: "03",
     titulo: "Confirmamos por Instagram",
-    texto: "Te llevamos a mi Instagram para que me escribas y te confirme.",
+    texto: "Copias los datos de tu cita y me los mandas por DM en Instagram. Ahí te confirmo.",
   },
 ];
 

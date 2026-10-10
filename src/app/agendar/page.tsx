@@ -18,7 +18,7 @@ export default function AgendarPage() {
             eyebrow="Agendar"
             as="h1"
             title="Aparta tu cita en tres pasos."
-            description="Elige servicio, día y horario. Al final te llevamos a mi Instagram para que me mandes un mensaje y te confirme."
+            description="Elige servicio, día y horario. Para confirmar, copia los datos de tu cita y mándalos por DM a mi Instagram."
           />
           <p className="mt-6 text-sm text-muted">
             {HORARIO.diasTexto} &middot;{" "}

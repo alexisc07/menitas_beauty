@@ -9,7 +9,7 @@ import {
   urlSolicitud,
   type BloqueId,
 } from "@/lib/availability";
-import { INSTAGRAM_SIN_CONFIGURAR } from "@/lib/config";
+import { INSTAGRAM_SIN_CONFIGURAR, INSTAGRAM_USUARIO } from "@/lib/config";
 import {
   CATEGORIAS,
   formatearDuracion,
@@ -282,10 +282,12 @@ export function BookingForm() {
                   return (
                     <label
                       key={b.id}
-                      className={`flex cursor-pointer flex-col gap-1 rounded-xl border p-5 transition-[border-color,background-color] duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary ${
-                        activo
-                          ? "border-primary bg-primary-soft/60"
-                          : "border-hairline bg-canvas hover:border-primary/50"
+                      className={`relative flex flex-col gap-1 rounded-xl border p-5 transition-[border-color,background-color] duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary ${
+                        b.apartado
+                          ? "cursor-not-allowed border-dashed border-hairline bg-surface-card/50"
+                          : activo
+                            ? "cursor-pointer border-primary bg-primary-soft/60"
+                            : "cursor-pointer border-hairline bg-canvas hover:border-primary/50"
                       }`}
                     >
                       <input
@@ -293,14 +295,26 @@ export function BookingForm() {
                         name="bloque"
                         value={b.id}
                         checked={activo}
+                        disabled={b.apartado}
                         onChange={() => setBloque(b.id)}
                         className="sr-only"
                       />
-                      <span className="tabular font-[family-name:var(--font-display)] text-2xl text-ink">
+                      {b.apartado ? (
+                        <span className="absolute right-4 top-4 rounded-full bg-surface-card px-2.5 py-0.5 text-xs font-medium text-muted">
+                          Apartado
+                        </span>
+                      ) : null}
+                      <span
+                        className={`tabular font-[family-name:var(--font-display)] text-2xl ${
+                          b.apartado ? "text-muted/60 line-through" : "text-ink"
+                        }`}
+                      >
                         {b.label}
                       </span>
                       <span className="tabular text-sm text-muted">{b.rango}</span>
-                      <span className="text-xs text-muted">{b.descripcion}</span>
+                      <span className="text-xs text-muted">
+                        {b.apartado ? "Este horario ya está ocupado" : b.descripcion}
+                      </span>
                     </label>
                   );
                 })}
@@ -382,82 +396,77 @@ export function BookingForm() {
 
             {completo && mensaje ? (
               <div className="mt-7">
-                {/* Acción principal — ir al perfil de Instagram */}
+                {/* Instrucción de confirmación */}
+                <div className="rounded-xl border border-primary/30 bg-primary-soft/40 p-4">
+                  <p className="text-sm font-medium text-ink">Para confirmar tu cita</p>
+                  <p className="mt-1.5 text-xs leading-relaxed text-body">
+                    Copia los datos de tu cita y envíalos por mensaje directo (DM) a{" "}
+                    <span translate="no" className="font-medium text-ink">
+                      @{INSTAGRAM_USUARIO}
+                    </span>{" "}
+                    en Instagram. Sin ese mensaje, tu cita no queda registrada.
+                  </p>
+                </div>
+
+                {/* Datos a copiar */}
+                <div className="mt-4 rounded-xl border border-hairline bg-canvas p-4">
+                  <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">
+                    Datos de tu cita
+                  </p>
+                  <p
+                    id="mensaje-cita"
+                    className="mt-2 whitespace-pre-line text-sm leading-relaxed text-body"
+                  >
+                    {mensaje}
+                  </p>
+                </div>
+
+                {/* Paso 1 — copiar (resaltado hasta que se copia) */}
+                <button
+                  type="button"
+                  onClick={copiarMensaje}
+                  className={`mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg px-5 text-sm font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${copiado ? "border border-hairline bg-canvas text-ink hover:border-primary hover:text-primary" : "bg-primary text-on-primary hover:bg-primary-active"}`}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                    {copiado ? (
+                      <path d="M20 6 9 17l-5-5" />
+                    ) : (
+                      <>
+                        <rect x="9" y="9" width="11" height="11" rx="2" />
+                        <path d="M5 15V5a2 2 0 0 1 2-2h10" />
+                      </>
+                    )}
+                  </svg>
+                  {copiado ? "Datos copiados" : "1. Copiar datos de mi cita"}
+                </button>
+
+                {/* Paso 2 — abrir Instagram (se resalta después de copiar) */}
                 <a
                   href={urlSolicitud()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-on-primary transition-colors duration-200 hover:bg-primary-active focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  className={`mt-2.5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg px-5 text-sm font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${copiado ? "bg-primary text-on-primary hover:bg-primary-active" : "border border-hairline bg-canvas text-ink hover:border-primary hover:text-primary"}`}
                 >
                   <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4.5" fill="none" stroke="currentColor" strokeWidth="1.9">
                     <rect x="3" y="3" width="18" height="18" rx="5" />
                     <circle cx="12" cy="12" r="4" />
                     <circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none" />
                   </svg>
-                  Escribirme por Instagram
+                  2. Abrir Instagram y enviar por DM
                 </a>
 
-                <p className="mt-3 text-center text-xs leading-relaxed text-muted">
-                  Te llevamos a mi perfil. Mándame un mensaje directo con tu cita.
+                <p
+                  aria-live="polite"
+                  className={`mt-3 text-center text-xs leading-relaxed ${
+                    falloCopia ? "text-primary" : "text-muted"
+                  }`}
+                >
+                  {falloCopia
+                    ? "Tu navegador no nos dejó copiar. Los datos ya quedaron seleccionados: cópialos con Ctrl+C (o mantén presionado y elige «Copiar» en el celular)."
+                    : copiado
+                      ? "Listo. En el perfil toca «Enviar mensaje» y pega los datos en el chat."
+                      : "Primero copia los datos; después pégalos en el DM de Instagram."}
                 </p>
-
-                {/* Opcional — copiar el resumen para pegarlo en el chat */}
-                <details className="group mt-5 border-t border-hairline pt-4">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-xs font-medium text-ink transition-colors duration-200 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
-                    <span>Copiar los datos de mi cita (opcional)</span>
-                    <svg
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      className="size-4 shrink-0 text-primary transition-transform duration-300 group-open:rotate-45"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.75"
-                      strokeLinecap="round"
-                    >
-                      <path d="M12 5v14M5 12h14" />
-                    </svg>
-                  </summary>
-
-                  <div className="mt-3 rounded-xl border border-hairline bg-canvas p-4">
-                    <p
-                      id="mensaje-cita"
-                      className="whitespace-pre-line text-sm leading-relaxed text-body"
-                    >
-                      {mensaje}
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={copiarMensaje}
-                    className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-hairline bg-canvas px-5 text-sm font-medium text-ink transition-colors duration-200 hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                  >
-                    <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                      {copiado ? (
-                        <path d="M20 6 9 17l-5-5" />
-                      ) : (
-                        <>
-                          <rect x="9" y="9" width="11" height="11" rx="2" />
-                          <path d="M5 15V5a2 2 0 0 1 2-2h10" />
-                        </>
-                      )}
-                    </svg>
-                    {copiado ? "¡Copiado!" : "Copiar"}
-                  </button>
-
-                  <p
-                    aria-live="polite"
-                    className={`mt-2.5 text-center text-xs leading-relaxed ${
-                      falloCopia ? "text-primary" : "text-muted"
-                    }`}
-                  >
-                    {falloCopia
-                      ? "Tu navegador no nos dejó copiar. El texto ya quedó seleccionado: cópialo con Ctrl+C (o mantén presionado y elige «Copiar» en el celular)."
-                      : copiado
-                        ? "Listo, pégalo en el chat."
-                        : "Así no tengo que preguntarte los datos por chat."}
-                  </p>
-                </details>
               </div>
             ) : (
               <div className="mt-7">
@@ -481,8 +490,8 @@ export function BookingForm() {
             )}
 
             <p className="mt-6 border-t border-hairline pt-5 text-xs leading-relaxed text-muted">
-              Este calendario muestra el horario de Menita, no su agenda en tiempo real.
-              Tu cita queda apartada hasta que ella te confirme por Instagram.
+              Los horarios marcados como apartados ya no se pueden elegir. Tu cita queda
+              confirmada solo cuando Menita te responde por Instagram.
             </p>
           </div>
 

@@ -171,9 +171,12 @@ export function Calendario({
           const esHoy = mismoDia(fecha, hoy);
           const enFoco = mismoDia(fecha, foco);
 
-          const etiqueta = cerrado
-            ? `${formatearFechaLarga(fecha)} — no disponible`
-            : formatearFechaLarga(fecha);
+          const etiqueta =
+            cierre === "lleno"
+              ? `${formatearFechaLarga(fecha)} — sin horarios disponibles`
+              : cerrado
+                ? `${formatearFechaLarga(fecha)} — no disponible`
+                : formatearFechaLarga(fecha);
 
           return (
             <button
@@ -216,7 +219,7 @@ export function Calendario({
       </div>
 
       <p className="mt-4 border-t border-hairline pt-4 text-xs leading-relaxed text-muted">
-        Los domingos y los días en gris no están disponibles. Puedes agendar hasta con{" "}
+        Los domingos, los días llenos y los días en gris no están disponibles. Puedes agendar hasta con{" "}
         {MESES_ADELANTE} meses de anticipación.
       </p>
     </div>
