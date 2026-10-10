@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { PlaceholderTile, type Trabajo } from "./placeholder-tile";
 import { Reveal } from "./reveal";
 
@@ -9,7 +9,7 @@ import { Reveal } from "./reveal";
 const UMBRAL_SWIPE = 50;
 
 export function GaleriaInteractiva({ trabajos }: { trabajos: Trabajo[] }) {
-  const fotos = trabajos.filter((t) => t.src);
+  const fotos = useMemo(() => trabajos.filter((t) => t.src), [trabajos]);
   const [indice, setIndice] = useState<number | null>(null);
 
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -31,6 +31,15 @@ export function GaleriaInteractiva({ trabajos }: { trabajos: Trabajo[] }) {
       dialog.close();
     }
   }, [indice]);
+
+  // Precarga la foto anterior y la siguiente para que las flechas sean instantáneas.
+  useEffect(() => {
+    if (indice === null || total < 2) return;
+    for (const delta of [1, -1]) {
+      const vecina = fotos[(indice + delta + total) % total];
+      if (vecina?.src) new window.Image().src = vecina.src;
+    }
+  }, [indice, fotos, total]);
 
   function abrir(i: number, boton: HTMLButtonElement) {
     disparadorRef.current = boton;
@@ -131,6 +140,9 @@ export function GaleriaInteractiva({ trabajos }: { trabajos: Trabajo[] }) {
                 alt={actual.alt ?? actual.titulo}
                 width={actual.ancho ?? 1200}
                 height={actual.alto ?? 1200}
+                // Es la foto que la persona pidió ver: sin carga diferida.
+                loading="eager"
+                fetchPriority="high"
                 className="h-auto max-h-[calc(100dvh-14rem)] w-auto max-w-full rounded-lg object-contain"
                 sizes="(min-width: 1024px) 70vw, 100vw"
               />

@@ -48,8 +48,9 @@ export function PlaceholderTile({
             alt={trabajo.alt ?? trabajo.titulo}
             fill
             sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-            priority={priority}
-            loading={priority ? undefined : "lazy"}
+            // `priority` de next/image está deprecado en Next 16.
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : undefined}
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
