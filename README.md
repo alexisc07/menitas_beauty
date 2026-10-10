@@ -85,6 +85,46 @@ export const FECHAS_BLOQUEADAS: string[] = ["2026-12-24", "2026-12-25"];
 Formato `AAAA-MM-DD`. Esos días aparecen en gris y no se pueden elegir.
 Los domingos y las fechas pasadas ya se bloquean automáticamente.
 
+### Marcar horarios apartados (hoja de Google)
+
+Menita marca las citas confirmadas en una hoja de Google desde el celular, y la
+página de agendar las muestra tachadas como **Apartado**. Si un día tiene los dos
+bloques apartados, el calendario lo marca como lleno. No hace falta volver a
+publicar el sitio.
+
+**Configuración (una sola vez, desde un navegador):**
+
+1. Crea una hoja nueva en Google Sheets, por ejemplo *Horarios apartados*.
+2. En la fila 1 escribe `Fecha` en la columna A y `Horario` en la B
+   (hay una plantilla en `docs/plantilla-horarios-apartados.csv`).
+3. *Archivo → Compartir → Publicar en la web*. Elige la pestaña de la hoja y el
+   formato **Valores separados por comas (.csv)**, deja activado *Volver a
+   publicar automáticamente* y pulsa *Publicar*.
+4. Copia el enlace y pégalo en `URL_HOJA_APARTADOS` de `src/lib/config.ts`.
+
+> La app de Google Sheets del celular no tiene la opción *Publicar en la web*:
+> este paso se hace desde un navegador. Después, la hoja se edita normalmente
+> desde la app.
+
+> ⚠️ **La hoja publicada es pública.** Cualquiera con el enlace puede leerla.
+> Escribe solo fecha y horario; **nunca nombres ni teléfonos** de clientas.
+
+**Uso diario:** una fila por cada horario apartado. Para liberar un horario (por
+ejemplo, si cancelan), borra la fila. Los cambios tardan hasta ~5 minutos en
+verse, porque Google actualiza la hoja publicada cada pocos minutos.
+
+| Fecha | Horario | Qué aparta |
+| --- | --- | --- |
+| `14/10/2026` | `15:00` | el bloque de las 15:00 |
+| `14/10` | `5:30 pm` | el bloque de las 17:30 (sin año = el próximo 14/10) |
+| `15 de octubre` | `tarde` / `noche` | el de las 15:00 / el de las 17:30 |
+| `20/10/2026` | `todo el día` | los dos bloques (día lleno) |
+| `21/10/2026` | *(vacío)* | los dos bloques: ante la duda, se bloquea el día |
+
+Las filas que no se entienden se ignoran y se avisan en la consola del navegador.
+Si la hoja no responde, el sitio sigue funcionando y avisa que la disponibilidad
+se confirma por DM.
+
 ### Cambiar el horario
 
 `src/lib/config.ts` → `HORARIO` (texto visible) y

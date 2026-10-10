@@ -14,6 +14,15 @@ export const INSTAGRAM_USUARIO: string = "_menitasbeauty_";
 /** true mientras el usuario siga siendo el de ejemplo. */
 export const INSTAGRAM_SIN_CONFIGURAR = INSTAGRAM_USUARIO === "tu.usuario";
 
+/**
+ * Enlace CSV de la hoja de Google con los horarios apartados
+ * (Archivo → Compartir → Publicar en la web → formato CSV).
+ *
+ * ⚠️ Esa hoja es pública: solo fecha y horario, nunca nombres ni teléfonos.
+ * Vacío = no se usa hoja; solo cuenta BLOQUES_APARTADOS de availability.ts.
+ */
+export const URL_HOJA_APARTADOS: string = "";
+
 /** Perfil público de Instagram: a donde llega la clienta para escribir. */
 export const urlPerfilInstagram = () => `https://instagram.com/${INSTAGRAM_USUARIO}`;
 

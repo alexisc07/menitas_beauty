@@ -27,10 +27,13 @@ export function Calendario({
   hoy,
   seleccionada,
   onSeleccionar,
+  apartados,
 }: {
   hoy: Date;
   seleccionada: Date | null;
   onSeleccionar: (fecha: Date) => void;
+  /** Bloques apartados ("AAAA-MM-DD HH:MM"); los días con todo apartado salen llenos. */
+  apartados?: readonly string[];
 }) {
   const [mesActual, setMesActual] = useState(() => new Date(hoy.getFullYear(), hoy.getMonth(), 1));
   const [foco, setFoco] = useState<Date>(() => seleccionada ?? hoy);
@@ -165,7 +168,7 @@ export function Calendario({
             return <div key={`vacio-${i}`} role="presentation" />;
           }
 
-          const cierre = motivoCierre(fecha, hoy);
+          const cierre = motivoCierre(fecha, hoy, apartados);
           const cerrado = cierre !== null;
           const activa = seleccionada !== null && mismoDia(fecha, seleccionada);
           const esHoy = mismoDia(fecha, hoy);

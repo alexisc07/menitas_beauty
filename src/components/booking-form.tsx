@@ -1,15 +1,22 @@
 "use client";
 
-import { useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import {
   BLOQUES,
+  BLOQUES_APARTADOS,
+  bloqueApartado,
   construirMensaje,
   formatearFechaLarga,
   getBloquesParaFecha,
   urlSolicitud,
   type BloqueId,
 } from "@/lib/availability";
-import { INSTAGRAM_SIN_CONFIGURAR, INSTAGRAM_USUARIO } from "@/lib/config";
+import {
+  INSTAGRAM_SIN_CONFIGURAR,
+  INSTAGRAM_USUARIO,
+  URL_HOJA_APARTADOS,
+} from "@/lib/config";
+import { descargarApartados } from "@/lib/hoja-apartados";
 import {
   CATEGORIAS,
   formatearDuracion,
@@ -82,7 +89,43 @@ export function BookingForm() {
   const setServicioId = setServicioElegido;
 
   const [fecha, setFecha] = useState<Date | null>(null);
-  const [bloque, setBloque] = useState<BloqueId | null>(null);
+  const [bloqueElegido, setBloque] = useState<BloqueId | null>(null);
+
+  // Horarios apartados: los de availability.ts + los de la hoja de Google.
+  const [apartadosHoja, setApartadosHoja] = useState<string[]>([]);
+  const [estadoHoja, setEstadoHoja] = useState<"sin-hoja" | "cargando" | "listo" | "error">(
+    URL_HOJA_APARTADOS ? "cargando" : "sin-hoja",
+  );
+
+  useEffect(() => {
+    if (!URL_HOJA_APARTADOS) return;
+    let cancelado = false;
+    descargarApartados(URL_HOJA_APARTADOS, new Date())
+      .then(({ apartados, ignoradas }) => {
+        if (cancelado) return;
+        setApartadosHoja(apartados);
+        setEstadoHoja("listo");
+        if (ignoradas.length > 0) {
+          console.warn("Filas de la hoja de apartados que no se entendieron:", ignoradas);
+        }
+      })
+      .catch((error) => {
+        if (cancelado) return;
+        setEstadoHoja("error");
+        console.warn("No se pudo leer la hoja de apartados:", error);
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, []);
+
+  const apartados = useMemo(() => [...BLOQUES_APARTADOS, ...apartadosHoja], [apartadosHoja]);
+
+  // Si el bloque elegido resulta apartado (p. ej. la hoja cargó después), se descarta.
+  const bloque =
+    bloqueElegido && fecha && !bloqueApartado(fecha, bloqueElegido, apartados)
+      ? bloqueElegido
+      : null;
   const [nombre, setNombre] = useState("");
   const [intentoEnvio, setIntentoEnvio] = useState(false);
 
@@ -95,8 +138,8 @@ export function BookingForm() {
   const nombreValido = nombre.trim().length >= 2;
 
   const bloquesDisponibles = useMemo(
-    () => (fecha && hoy ? getBloquesParaFecha(fecha, hoy) : []),
-    [fecha, hoy],
+    () => (fecha && hoy ? getBloquesParaFecha(fecha, hoy, apartados) : []),
+    [fecha, hoy, apartados],
   );
 
   // Al cambiar de día, el bloque elegido deja de ser válido.
@@ -255,7 +298,21 @@ export function BookingForm() {
           refSeccion={refFecha}
         >
           {hoy ? (
-            <Calendario hoy={hoy} seleccionada={fecha} onSeleccionar={elegirFecha} />
+            <>
+              <Calendario
+                hoy={hoy}
+                seleccionada={fecha}
+                onSeleccionar={elegirFecha}
+                apartados={apartados}
+              />
+              <p aria-live="polite" className="mt-3 text-xs leading-relaxed text-muted">
+                {estadoHoja === "cargando"
+                  ? "Revisando horarios apartados…"
+                  : estadoHoja === "error"
+                    ? "No pudimos revisar los horarios apartados en este momento. Menita te confirmará la disponibilidad por DM."
+                    : ""}
+              </p>
+            </>
           ) : (
             <div
               aria-hidden="true"
@@ -271,7 +328,11 @@ export function BookingForm() {
           descripcion="Dos bloques por día, de 15:00 a 20:00."
           refSeccion={refHorario}
         >
-          {fecha ? (
+          {fecha && bloquesDisponibles.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-hairline px-5 py-6 text-sm text-muted">
+              Este día ya no tiene horarios disponibles. Elige otro día en el calendario.
+            </p>
+          ) : fecha ? (
             <fieldset>
               <legend className="sr-only">
                 Horarios disponibles para {formatearFechaLarga(fecha)}
