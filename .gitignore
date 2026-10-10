@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# herramientas de agentes de IA (no forman parte del sitio)
+/CLAUDE.md
+/AGENTS.md
+/.claude/
+/.agents/
+/.cursor/
+/.github/copilot-instructions.md
+
+# netlify
+.netlify/
