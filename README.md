@@ -1,7 +1,11 @@
 # Menita&rsquo;s Beauty
 
-Sitio web con carta de servicios y agendado de citas por Instagram.
+Página web para Ximena (@_menitasbeauty_), con carta de servicios y agendado
+de citas por Instagram.
 Next.js 16 · TypeScript · Tailwind v4. Todo el contenido está en español (es-MX).
+
+> Este repositorio existe para poder hacer cambios desde cualquier lado:
+> clona, edita y publica siguiendo las instrucciones de abajo.
 
 ## Arrancar el proyecto
 
