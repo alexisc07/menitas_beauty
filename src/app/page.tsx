@@ -51,8 +51,8 @@ export default function HomePage() {
               </Badge>
 
               <h1 className="mt-6 text-[2.5rem] leading-[1.05] text-ink sm:text-6xl lg:text-[4.25rem]">
-                Uñas que se ven
-                <span className="block text-primary">hechas con calma.</span>
+                Uñas hechas
+                <span className="block text-primary">con cariño.</span>
               </h1>
 
               <p className="mt-6 max-w-lg text-base leading-relaxed text-body sm:text-lg">

@@ -68,10 +68,13 @@ export function PlaceholderTile({
         )}
       </div>
 
-      <figcaption className="flex items-center justify-between gap-2 border-t border-hairline px-4 py-3">
-        <span className="truncate text-sm text-ink">{trabajo.titulo}</span>
-        {!tieneFoto ? <span className="shrink-0 text-xs text-muted">Foto pendiente</span> : null}
-      </figcaption>
+      {/* Las fotos reales van sin título visible; solo los marcadores lo muestran. */}
+      {!tieneFoto ? (
+        <figcaption className="flex items-center justify-between gap-2 border-t border-hairline px-4 py-3">
+          <span className="truncate text-sm text-ink">{trabajo.titulo}</span>
+          <span className="shrink-0 text-xs text-muted">Foto pendiente</span>
+        </figcaption>
+      ) : null}
     </figure>
   );
 }

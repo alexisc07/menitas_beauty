@@ -131,9 +131,9 @@ export function GaleriaInteractiva({ trabajos }: { trabajos: Trabajo[] }) {
             </div>
 
             {/* Foto */}
-            <figure className="flex min-h-0 w-full max-w-5xl flex-1 flex-col items-center justify-center gap-3">
-              {/* Alto máximo = pantalla menos barra superior, pie de foto,
-                  botones y márgenes (~14rem), para que nada se encime. */}
+            <div className="flex min-h-0 w-full max-w-5xl flex-1 items-center justify-center">
+              {/* Alto máximo = pantalla menos barra superior, botones y
+                  márgenes (~12rem), para que nada se encime. */}
               <Image
                 key={actual.id}
                 src={actual.src as string}
@@ -143,13 +143,10 @@ export function GaleriaInteractiva({ trabajos }: { trabajos: Trabajo[] }) {
                 // Es la foto que la persona pidió ver: sin carga diferida.
                 loading="eager"
                 fetchPriority="high"
-                className="h-auto max-h-[calc(100dvh-14rem)] w-auto max-w-full rounded-lg object-contain"
+                className="h-auto max-h-[calc(100dvh-12rem)] w-auto max-w-full rounded-lg object-contain"
                 sizes="(min-width: 1024px) 70vw, 100vw"
               />
-              <figcaption className="text-center font-[family-name:var(--font-display)] text-lg text-on-dark">
-                {actual.titulo}
-              </figcaption>
-            </figure>
+            </div>
 
             {/* Navegación */}
             <div className="flex items-center gap-3">
