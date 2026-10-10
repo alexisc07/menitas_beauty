@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { SERVICIOS } from "@/lib/services";
 import { TRABAJOS } from "@/lib/gallery";
 import { HORARIO, NEGOCIO } from "@/lib/config";
 import { ServiceCard } from "@/components/service-card";
 import { PlaceholderTile } from "@/components/placeholder-tile";
 import { Reveal } from "@/components/reveal";
+import { Snapshot } from "@/components/snapshot";
 import {
   Badge,
   ButtonLink,
@@ -181,15 +181,16 @@ export default function HomePage() {
             </ButtonLink>
           </div>
 
-          <ul className="mt-12 grid gap-5 sm:grid-cols-3">
+          <ul className="mt-12 grid items-start gap-x-8 gap-y-10 px-2 sm:grid-cols-3 sm:px-4">
             {teaser.map((trabajo, i) => (
-              <Reveal as="li" key={trabajo.id} delay={i * 80}>
-                <Link
+              <Reveal as="li" key={trabajo.id} className="snapshot-li pt-3">
+                <Snapshot
+                  trabajo={trabajo}
+                  retraso={i * 120}
+                  sizes="(min-width: 640px) 30vw, 90vw"
                   href="/galeria"
-                  className="block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-                >
-                  <PlaceholderTile trabajo={trabajo} indice={i} />
-                </Link>
+                  etiqueta={`Ver en la galería: ${trabajo.titulo}`}
+                />
               </Reveal>
             ))}
           </ul>

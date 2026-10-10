@@ -18,7 +18,7 @@ export default function GaleriaPage() {
             eyebrow="Galería"
             as="h1"
             title="Trabajos recientes."
-            description="Diseños hechos a mano, uno por uno. Toca cualquier foto para verla completa. Si viste algo que te gustó, mándamelo como referencia al agendar."
+            description="Diseños hechos a mano, uno por uno. Si viste algo que te gustó, mándamelo como referencia al agendar."
           />
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -30,7 +30,8 @@ export default function GaleriaPage() {
         </Container>
       </Section>
 
-      <Section className="pt-4">
+      {/* "Mesa" con puntitos sobre la que caen las fotos. */}
+      <Section className="overflow-x-clip border-t border-hairline bg-surface-soft bg-[radial-gradient(var(--hairline)_1px,transparent_1px)] [background-size:22px_22px] pt-12 sm:pt-16">
         <Container>
           <GaleriaInteractiva trabajos={TRABAJOS} />
         </Container>

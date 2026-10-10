@@ -141,3 +141,179 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------------------------------------------------------------
+   Galería tipo snapshot (fotos instantáneas sobre una mesa)
+   Solo se animan transform y opacity.
+   --------------------------------------------------------------- */
+@layer components {
+  /* La entrada la anima la foto, no el <li> que la contiene. */
+  .snapshot-li.reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .snapshot {
+    position: relative;
+    display: block;
+    transform: rotate(var(--rot, 0deg));
+    transition-property: transform;
+    transition-duration: 450ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .snapshot:hover,
+  .snapshot:focus-visible {
+    z-index: 10;
+    transform: perspective(900px) translateY(-8px) rotate(0deg)
+      rotateX(var(--ry, 0deg)) rotateY(var(--rx, 0deg)) scale(1.04);
+    transition-duration: 300ms;
+  }
+
+  .snapshot:active {
+    transform: perspective(900px) translateY(-2px) rotate(0deg) scale(1.01);
+  }
+
+  .snapshot-marco {
+    display: block;
+    border-radius: 3px;
+    background-color: #fffdf8;
+    padding: 0.55rem 0.55rem 2.4rem;
+    box-shadow:
+      0 1px 2px rgb(26 22 19 / 0.08),
+      0 14px 28px -16px rgb(26 22 19 / 0.45);
+    transition: box-shadow 300ms ease;
+  }
+
+  @media (min-width: 640px) {
+    .snapshot-marco {
+      padding: 0.75rem 0.75rem 3.25rem;
+    }
+  }
+
+  .snapshot:hover .snapshot-marco,
+  .snapshot:focus-visible .snapshot-marco {
+    box-shadow:
+      0 2px 4px rgb(26 22 19 / 0.08),
+      0 28px 48px -18px rgb(26 22 19 / 0.5);
+  }
+
+  /* Reflejo suave, como el brillo del papel fotográfico. */
+  .snapshot-brillo {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      135deg,
+      rgb(255 255 255 / 0.22) 0%,
+      rgb(255 255 255 / 0) 38%
+    );
+  }
+
+  /* Cinta adhesiva tipo washi, con bordes rasgados. */
+  .snapshot-cinta {
+    position: absolute;
+    z-index: 2;
+    height: 1.35rem;
+    background-color: rgb(242 226 219 / 0.85);
+    box-shadow: 0 1px 2px rgb(26 22 19 / 0.08);
+    clip-path: polygon(
+      0 8%, 4% 0, 96% 0, 100% 10%, 97% 30%, 100% 52%, 97% 74%, 100% 92%,
+      95% 100%, 5% 100%, 0 90%, 3% 70%, 0 48%, 3% 28%
+    );
+  }
+
+  .snapshot-cinta--centro {
+    top: -0.65rem;
+    left: 50%;
+    width: 4.75rem;
+    transform: translateX(-50%) rotate(-3deg);
+  }
+
+  .snapshot-cinta--esquina {
+    top: -0.2rem;
+    left: -1.1rem;
+    width: 3.75rem;
+    transform: rotate(-38deg);
+  }
+
+  /* Caída al entrar en pantalla. */
+  .reveal[data-visible="false"] .snapshot {
+    opacity: 0;
+  }
+
+  .reveal[data-visible="true"] .snapshot:not([data-aterrizado]) {
+    animation: snapshot-caer 750ms cubic-bezier(0.22, 1, 0.36, 1) var(--retraso, 0ms)
+      backwards;
+  }
+
+  /* Mientras se barajan las fotos, la View Transition hace el movimiento. */
+  [data-barajando] .snapshot {
+    transition: none;
+  }
+
+  /* Visor: la foto se abre como una polaroid grande. */
+  .visor-polaroid {
+    transform: rotate(var(--rot-visor, -1deg));
+    animation: visor-abrir 450ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+
+  .visor-polaroid[data-direccion="siguiente"] {
+    animation-name: visor-siguiente;
+  }
+
+  .visor-polaroid[data-direccion="anterior"] {
+    animation-name: visor-anterior;
+  }
+}
+
+@keyframes snapshot-caer {
+  from {
+    opacity: 0;
+    transform: translateY(-48px) rotate(calc(var(--rot, 0deg) * 4)) scale(1.08);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(var(--rot, 0deg));
+  }
+}
+
+@keyframes visor-abrir {
+  from {
+    opacity: 0;
+    transform: scale(0.85) rotate(-8deg);
+  }
+}
+
+@keyframes visor-siguiente {
+  from {
+    opacity: 0;
+    transform: translateX(90px) rotate(9deg);
+  }
+}
+
+@keyframes visor-anterior {
+  from {
+    opacity: 0;
+    transform: translateX(-90px) rotate(-9deg);
+  }
+}
+
+::view-transition-group(*) {
+  animation-duration: 650ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal[data-visible="false"] .snapshot {
+    opacity: 1;
+  }
+
+  .snapshot,
+  .snapshot:hover,
+  .snapshot:focus-visible {
+    transform: rotate(var(--rot, 0deg));
+  }
+}
